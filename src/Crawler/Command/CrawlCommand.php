@@ -56,14 +56,27 @@ EOT
         $comments = $comments['data'];
         $users = [];
         foreach ($comments as $comment) {
-//            if ($comment['attributes']['is_by_patron']) {
-            $userLink = ($comment['relationships']['commenter']['links']['related']);
-            $data = \file_get_contents($userLink, false, $context);
-            $userData = \json_decode($data, true);
-            $userName = $userData['data']['attributes']['full_name'];
+            if ($comment['attributes']['is_by_patron']) {
+                $userLink = ($comment['relationships']['commenter']['links']['related']);
+                $data = \file_get_contents($userLink, false, $context);
+                $userData = \json_decode($data, true);
+                $userName = $userData['data']['attributes']['full_name'];
+                $pledgeSum = $userData['included'][0]['attributes']['pledge_sum'];
+                $entries = 0;
+                if ($pledgeSum >= 15000) {
+                    $entries = 15;
+                } elseif ($pledgeSum >= 5000) {
+                        $entries = 10;
+                } elseif ($pledgeSum >= 2500) {
+                        $entries = 5;
+                } elseif ($pledgeSum >= 1000) {
+                        $entries = 2;
+                } elseif ($pledgeSum >= 500) {
+                        $entries = 1;
+                }
 
-            $users[$userName] = 1;
-//            }
+                $users[$userName] = $entries;
+            }
         }
 
         $file = 'people.txt';
@@ -73,5 +86,7 @@ EOT
                 \file_put_contents($file, $user . "\n", FILE_APPEND | LOCK_EX);
             }
         }
+
+        $this->output->writeln("I'm done :)");
     }
 }
