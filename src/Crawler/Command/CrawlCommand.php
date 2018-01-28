@@ -7,7 +7,7 @@ use Symfony\Component\Console\Question\Question;
 
 /**
  * Class NewProjectCommand
- * @package Kunstmaan\Skylab\Command
+ * @package Crawler\Command
  */
 class CrawlCommand extends AbstractCommand
 {
